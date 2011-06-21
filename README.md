@@ -1,0 +1,1 @@
+LinkedIn SSO authentication module for Drupal 7.x
