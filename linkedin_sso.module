@@ -2,7 +2,7 @@
 
 /**
  * @file
- * This module injects itself into Drupal's Authentication stack.
+ * This module injects itself into Drupal's Authentication stack providing SSO for LinkedIn
  */
 
 require_once(dirname(__FILE__) . '/linkedin_sso.inc');

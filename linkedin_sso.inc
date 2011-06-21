@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * This file implements all the functionality from the hooks defined in linkedin_sso.module
+ */
+
 class LinkedInSSO {
 	private static $instance = null;
 	
@@ -108,17 +113,17 @@ class LinkedInSSO {
 			'#default_value' => variable_get('linkedin_sso_interstitial_html_head', ''),
 			'#size' => 120,
 			'#maxlength' => 16384,
-			'#description' => t('The HTML shown when a user logs out'),
+			'#description' => t('Any custom styles or scripts you want to be injected into the HEAD of the logout interstitial page.'),
 			'#required' => FALSE,
 		);
 		
 		$form['linkedin_sso_interstitial_html_body'] = array(
 			'#type' => 'textarea',
 			'#title' => t('Logout interstitial HTML BODY'),
-			'#default_value' => variable_get('linkedin_sso_interstitial_html_body', 'Interstitial logout graphic goes here!'),
+			'#default_value' => variable_get('linkedin_sso_interstitial_html_body', 'Interstitial logout message goes here!'),
 			'#size' => 120,
 			'#maxlength' => 16384,
-			'#description' => t('The HTML shown when a user logs out'),
+			'#description' => t('The HTML for the interstitial page shown when a user logs out.'),
 			'#required' => TRUE,
 		);
 
