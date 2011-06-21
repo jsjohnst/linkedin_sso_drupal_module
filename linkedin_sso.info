@@ -1,0 +1,9 @@
+name = LinkedIn SSO 
+description = Single Sign On with LinkedIn Connect API 
+package = LinkedIn Drupal Modules
+core = 7.x 
+version = 7.x-1.0
+configure = admin/config/linkedin_sso
+
+files[] = linkedin_sso.inc
+files[] = linkedin_sso.module

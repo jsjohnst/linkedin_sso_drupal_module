@@ -1,0 +1,78 @@
+<?php
+
+/**
+ * @file
+ * This module injects itself into Drupal's Authentication stack.
+ */
+
+require_once(dirname(__FILE__) . '/linkedin_sso.inc');
+
+/**
+ * Implementation of hook_init()
+ */
+function linkedin_sso_init() {
+	return LinkedInSSO::get_instance()->init();
+}
+
+/**
+ * Implementation of hook_menu.
+ */
+function linkedin_sso_menu() {
+	return LinkedInSSO::get_instance()->menu();
+}
+
+/**
+ * Implementation of hook_user_logout.
+ */
+function linkedin_sso_user_logout() {
+	return LinkedInSSO::get_instance()->user_logout();
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter(). for user_profile_form
+ */
+function linkedin_sso_form_user_profile_form_alter(&$form, $form_state, $form_id) {
+	return LinkedInSSO::get_instance()->form_user_profile_form_alter($form, $form_state, $form_id);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter(). for user_login_block
+ */
+function linkedin_sso_form_user_login_block_alter(&$form, $form_state, $form_id) {
+	return LinkedInSSO::get_instance()->login_form_alter($form, $form_state, $form_id);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter(). for user_login
+ */
+function linkedin_sso_form_user_login_alter(&$form, $form_state, $form_id) {
+	return LinkedInSSO::get_instance()->login_form_alter($form, $form_state, $form_id);
+}
+
+/**
+ * Implementation of hook_menu_local_tasks_alter.
+ */
+function linkedin_sso_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+	return LinkedInSSO::get_instance()->login_form_alter($data, $router_item, $root_path);
+}
+
+/**
+ * Implements hook_permission().
+ */
+function linkedin_sso_permission() {
+	return LinkedInSSO::get_instance()->permission();
+}
+
+
+/**
+ * These two functions work around an issue with Drupal not liking object method callbacks for some reason
+ */
+function _linkedin_sso_logout_page() {
+	return LinkedInSSO::get_instance()->user_logout_html();
+}
+function _linkedin_sso_login_page() {
+	return LinkedInSSO::get_instance()->user_login_html();
+}
+function _linkedin_sso_admin_settings($form, &$form_state) {
+	return LinkedInSSO::get_instance()->admin_settings($form, $form_state);
+}
