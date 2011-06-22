@@ -11,7 +11,7 @@ class LinkedInSSO {
 	private $api_key = null;
 	private $api_secret = null;
 	private $access_token_url = "https://api.linkedin.com/uas/oauth/accessToken";
-	private $profile_api_url = "http://api.linkedin.com/v1/people/~:(id,first-name,last-name,email,public-profile-url,picture-url,summary,positions:(title,company:(name)))";
+	private $profile_api_url = "http://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,public-profile-url,picture-url,summary,positions:(title,company:(name)))";
 	
 	public static function get_instance() {
 		if(!self::$instance) {
@@ -320,14 +320,14 @@ EOB;
 		$edit["data"]["linkedin_sso"]["member_id"] = $profile->id;
 		$edit["data"]["linkedin_sso"]["first_name"] = $profile->firstName;
 		$edit["data"]["linkedin_sso"]["last_name"] = $profile->lastName;
-		$edit["data"]["linkedin_sso"]["email"] = isset($profile->email) ? $profile->email : 'invalid@example.com'; // this field requires special perms
+		$edit["data"]["linkedin_sso"]["email"] = isset($profile->emailAddress) ? $profile->emailAddress : 'invalid@example.com'; // this field requires special perms
 		$edit["data"]["linkedin_sso"]["summary"] = $profile->summary;
 		$edit["data"]["linkedin_sso"]["title"] = isset($profile->positions->values[0]->title) ? $profile->positions->values[0]->title : '';
 		$edit["data"]["linkedin_sso"]["company"] = isset($profile->positions->values[0]->company->name) ? $profile->positions->values[0]->company->name : '';
 		$edit["data"]["linkedin_sso"]["oauth_token"] = $profile->oauth_token;
 		$edit["data"]["linkedin_sso"]["oauth_token_secret"] = $profile->oauth_token_secret;
 		
-		$edit["mail"] = isset($profile->email) ? $profile->email : 'invalid@example.com'; // this field requires special perms
+		$edit["mail"] = isset($profile->emailAddress) ? $profile->emailAddress : 'invalid@example.com'; // this field requires special perms
 		$edit["picture"] = array("uri" => $profile->pictureUrl);
 
 		$ret = user_save($GLOBALS["user"], $edit);
