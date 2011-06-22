@@ -11,7 +11,7 @@ class LinkedInSSO {
 	private $api_key = null;
 	private $api_secret = null;
 	private $access_token_url = "https://api.linkedin.com/uas/oauth/accessToken";
-	private $profile_api_url = "http://api.linkedin.com/v1/people/~:(id,first-name,last-name,public-profile-url,picture-url,summary,positions:(title,company:(name)))";
+	private $profile_api_url = "http://api.linkedin.com/v1/people/~:(id,first-name,last-name,email,public-profile-url,picture-url,summary,positions:(title,company:(name)))";
 	
 	public static function get_instance() {
 		if(!self::$instance) {
