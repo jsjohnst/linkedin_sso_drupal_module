@@ -63,6 +63,13 @@ function linkedin_sso_permission() {
 	return LinkedInSSO::get_instance()->permission();
 }
 
+/**
+ * Implements hook_TYPE_alter(). for username
+ */
+function linkedin_sso_username_alter(&$name, $account) {
+	return LinkedInSSO::get_instance()->display_name($name, $account);
+}
+
 
 /**
  * These two functions work around an issue with Drupal not liking object method callbacks for some reason

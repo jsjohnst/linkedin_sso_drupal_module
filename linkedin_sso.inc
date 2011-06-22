@@ -148,6 +148,16 @@ class LinkedInSSO {
 		$form['links']['#markup'] = '<div id="linkedin_sso"><script type="IN/Login"><a href="' . $GLOBALS["base_url"] . '/linkedin_sso/logout">Logout</a></script></div>';
 	}
 	
+	public function display_name(&$name, $account) {
+		if(isset($account->data["linkedin_sso"]["first_name"])) {
+			$name = $account->data["linkedin_sso"]["first_name"];
+		}
+		if(isset($account->data["linkedin_sso"]["last_name"])) {
+			$name .= " " . $account->data["linkedin_sso"]["last_name"];
+		}
+		$name = trim($name);
+	}
+	
 	public function user_logout() {
 		if(!$this->api_key || !$this->api_secret) {
 			return;
@@ -310,16 +320,23 @@ EOB;
 		$edit["data"]["linkedin_sso"]["member_id"] = $profile->id;
 		$edit["data"]["linkedin_sso"]["first_name"] = $profile->firstName;
 		$edit["data"]["linkedin_sso"]["last_name"] = $profile->lastName;
-		$edit["data"]["linkedin_sso"]["email"] = isset($profile->email) ? $profile->email : ''; // this field requires special perms
+		$edit["data"]["linkedin_sso"]["email"] = isset($profile->email) ? $profile->email : 'invalid@example.com'; // this field requires special perms
 		$edit["data"]["linkedin_sso"]["summary"] = $profile->summary;
 		$edit["data"]["linkedin_sso"]["title"] = isset($profile->positions->values[0]->title) ? $profile->positions->values[0]->title : '';
 		$edit["data"]["linkedin_sso"]["company"] = isset($profile->positions->values[0]->company->name) ? $profile->positions->values[0]->company->name : '';
 		$edit["data"]["linkedin_sso"]["oauth_token"] = $profile->oauth_token;
 		$edit["data"]["linkedin_sso"]["oauth_token_secret"] = $profile->oauth_token_secret;
 		
-		$edit["mail"] = isset($profile->email) ? $profile->email : ''; // this field requires special perms
+		$edit["mail"] = isset($profile->email) ? $profile->email : 'invalid@example.com'; // this field requires special perms
+		$edit["picture"] = array("uri" => $profile->pictureUrl);
 
-		user_save($GLOBALS["user"], $edit);
+		$ret = user_save($GLOBALS["user"], $edit);
+		
+		if($ret) {
+			$GLOBALS["user"] = $ret;
+		} else {
+			watchdog('linkedin_sso', "Failed to save extended profile fields for user.", array(), WATCHDOG_DEBUG);
+		}
 	}
 	
 	private function get_profile_info($member_id, $access_token) {
