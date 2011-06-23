@@ -45,6 +45,26 @@ class LinkedInSSO {
 					});
 				}
 			});
+			
+			// attach LinkedIn SSO login handler
+			$('a[href=\"/user\"]').click(function(event) {
+			  try{ var ret = IN.User.authorize(); }
+			  catch(e) { return; }
+			  if(ret) event.preventDefault();
+			});
+			
+			// attach LinkedIn SSO login handler
+			$('a[href=\"/user/login\"]').click(function(event) {
+			  try{ var ret = IN.User.authorize(); }
+			  catch(e) { return; }
+			  if(ret) event.preventDefault();
+			});
+			
+			// registration links point to linkedin.com
+			$('a[href=\"/user/register\"]').attr({
+			  href: \"http://www.linkedin.com\",
+			  target: \"_blank\"
+			});
 		</script>"), 'linkedin_sso_js');
 	}
 	
