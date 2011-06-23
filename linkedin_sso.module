@@ -80,6 +80,15 @@ function _linkedin_sso_logout_page() {
 function _linkedin_sso_login_page() {
 	return LinkedInSSO::get_instance()->user_login_html();
 }
+function _linkedin_sso_adminlogin_page($form, &$form_state) {
+	return LinkedInSSO::get_instance()->admin_login($form, $form_state, 'form');
+}
+function _linkedin_sso_adminlogin_page_validate($form, &$form_state) {
+	return LinkedInSSO::get_instance()->admin_login($form, $form_state, 'validate');
+}
+function _linkedin_sso_adminlogin_page_submit($form, &$form_state) {
+	return LinkedInSSO::get_instance()->admin_login($form, $form_state, 'submit');
+}
 function _linkedin_sso_admin_settings($form, &$form_state) {
 	return LinkedInSSO::get_instance()->admin_settings($form, $form_state);
 }

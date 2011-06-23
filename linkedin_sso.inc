@@ -57,7 +57,7 @@ class LinkedInSSO {
 			'access arguments' => array('administer linkedin_sso'),
 			'weight' => 20,
 			'type' => MENU_LOCAL_TASK,
-		  	);
+		);
 
 		$items['linkedin_sso/logout'] = array(
 			'title' => 'JSAPI logout',
@@ -74,6 +74,15 @@ class LinkedInSSO {
 			'access callback' => true,
 			'weight' => 20
 		);
+		
+		$items['linkedin_sso/admin'] = array(
+			'title' => 'Drupal Login',
+			'page arguments' => array('_linkedin_sso_adminlogin_page'),
+			'page callback' => 'drupal_get_form',
+			'access callback' => true,
+			'weight' => 20,
+			'type' => MENU_CALLBACK,
+		);
 
 	  	return $items;
 	}
@@ -86,7 +95,34 @@ class LinkedInSSO {
 		);
 	}
 	
-	public function admin_settings($form, &$form_state){
+	public function admin_login($form, &$form_state, $action) {
+		switch($action) {
+			case 'form':
+				// generate the normal login form
+				$form = user_login($form, $form_state);
+				
+				// put our validator onto the stack
+				array_unshift($form['#validate'], '_linkedin_sso_adminlogin_page_validate');
+				
+				// return the form for rendering
+				return $form;
+				break; // good measure ;)
+			case 'validate':
+				// validate that this login is the root login only
+				$user = user_load_by_name($form['name']['#value']);
+				if(!$user || $user->uid != 1) {
+					form_set_error('username', 'Specified username is not allowed to login from here');
+				}
+				return;
+				break; // good measure ;)
+			case 'submit':
+				// do the actual login as usual if we made it to this point
+				user_login_submit($form, $form_state);
+				break;
+		}
+	}
+	
+	public function admin_settings($form, &$form_state) {
 		$form['linkedin_sso_api_key'] = array(
 			'#type' => 'textfield',
 			'#title' => t('LinkedIn Developer API Key'),
