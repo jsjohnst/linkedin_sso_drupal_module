@@ -12,6 +12,7 @@ class LinkedInSSO {
 	private $api_secret = null;
 	private $access_token_url = "https://api.linkedin.com/uas/oauth/accessToken";
 	private $profile_api_url = "http://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,public-profile-url,picture-url,summary,positions:(title,company:(name)))";
+	private $linkedin_sso_entropy = 0;
 	
 	public static function get_instance() {
 		if(!self::$instance) {
@@ -23,49 +24,18 @@ class LinkedInSSO {
 	private function __construct() {
 		$this->api_key = variable_get('linkedin_sso_api_key', null);
 		$this->api_secret = variable_get('linkedin_sso_secret_key', null);
+		$this->linkedin_sso_entropy = isset($_COOKIE["Drupal_visitor_linkedin_sso_entropy"]) ? $_COOKIE["Drupal_visitor_linkedin_sso_entropy"] : 0;
 	}
 	
 	public function init() {
-		drupal_add_html_head(array('#type' => 'markup',
-			'#markup' => "<script src='http://platform.linkedin.com/in.js' type='text/javascript'>
-				api_key: " . $this->api_key . "
-				credentials_cookie: true
-				authorize: true
-			</script><script>
-			IN.Event.on(IN, 'frameworkLoaded', function() {
-				IN.Event.on(IN, 'logout', function() {
-					setTimeout(function() {
-						window.location.href = '" . str_replace("https://", "http://", $GLOBALS["base_url"]) . "';
-					}, 2000);
-				});
-				
-				if(!IN.User.isAuthorized()) {
-					IN.Event.onOnce(IN, 'auth', function() {
-						window.location.href = '" . str_replace("http://", "https://", $GLOBALS["base_url"]) . "/linkedin_sso/login?return=' + encodeURIComponent(window.location.href.replace(/^http:\/\//, 'https://'));
-					});
-				}
-			});
-			
-			// attach LinkedIn SSO login handler
-			$('a[href=\"/user\"]').click(function(event) {
-			  try{ var ret = IN.User.authorize(); }
-			  catch(e) { return; }
-			  if(ret) event.preventDefault();
-			});
-			
-			// attach LinkedIn SSO login handler
-			$('a[href=\"/user/login\"]').click(function(event) {
-			  try{ var ret = IN.User.authorize(); }
-			  catch(e) { return; }
-			  if(ret) event.preventDefault();
-			});
-			
-			// registration links point to linkedin.com
-			$('a[href=\"/user/register\"]').attr({
-			  href: \"http://www.linkedin.com\",
-			  target: \"_blank\"
-			});
-		</script>"), 'linkedin_sso_js');
+		drupal_add_js(array('linkedin_sso' => array(
+			'api_key' => $this->api_key,
+			'base_url' => $GLOBALS["base_url"],
+			'active_session' => $GLOBALS["user"] && $GLOBALS["user"]->uid > 0,
+			'entropy' => $this->linkedin_sso_entropy
+		)), 'setting');
+		
+		drupal_add_js(drupal_get_path('module', 'linkedin_sso') . '/linkedin_sso.js', 'file');
 	}
 	
 	public function menu() {
@@ -219,6 +189,11 @@ class LinkedInSSO {
 			return;
 		}
 		
+		if(isset($_GET["no_jsapi_logout"])) {
+			// We aren't doing a JSAPI logout, so no need to do anything special here
+			return;
+		}
+		
 		// we need to destroy the session because we are hijacking what the default user_logout does
 		session_destroy();
 
@@ -227,14 +202,20 @@ class LinkedInSSO {
 	}
 	
 	public function user_logout_html() {
-		print("<html>\n<head>" . drupal_get_html_head() . "\n" . variable_get('linkedin_sso_interstitial_html_head', '') . "\n</head>");
+		user_cookie_save(array("linkedin_sso_entropy"=>++$this->linkedin_sso_entropy));
+				
+		print("<html>\n<head>");
+		print(drupal_get_html_head() . "\n");
+		print(drupal_get_js() . "\n");
+		print(drupal_get_css() . "\n");
+		print(variable_get('linkedin_sso_interstitial_html_head', '') . "\n</head>");
 		$markup = variable_get('linkedin_sso_interstitial_html_body', '');
 		print <<<EOB
 <body>
 	<script>
-		IN.Event.on(IN, "frameworkLoaded", function() {
+		var drupal_linkedin_sso_load_callback = function() {
 			IN.User.logout();
-		});
+		}
 	</script>
 	{$markup}
 </body>
@@ -251,6 +232,7 @@ EOB;
 		}
 		
 		$this->set_member_info_and_login_account($profile);
+		
 		header("Location: " . $this->validate_return_url($_REQUEST["return"]));
 	}
 	
