@@ -39,7 +39,8 @@ jQuery(document).ready(function document_ready_cb() {
 		});
 				
 		// attach LinkedIn SSO login handler
-		jQuery('a[href="/user"]', 'a[href=^"/user/login"]').click(function user_login_link_click_handler(event) {
+		var user_base_prefix_selector = Drupal.settings.linkedin_sso.base_path + '/user';
+		jQuery('a[href="' + user_base_prefix_selector + '"]', 'a[href^="' + user_base_prefix_selector + '/login"]').click(function user_login_link_click_handler(event) {
 			try { 
 				if(!IN.User.authorize()) event.preventDefault();
 			}
@@ -49,7 +50,7 @@ jQuery(document).ready(function document_ready_cb() {
 		});
 
 		// registration links point to linkedin.com
-		jQuery('a[href=^"/user/register"]').attr({
+		jQuery('a[href^="' + user_base_prefix_selector + '/register"]').attr({
 			href: "http://www.linkedin.com",
 			target: "_blank"
 		});

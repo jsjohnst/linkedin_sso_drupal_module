@@ -32,7 +32,8 @@ class LinkedInSSO {
 			'api_key' => $this->api_key,
 			'base_url' => $GLOBALS["base_url"],
 			'active_session' => $GLOBALS["user"] && $GLOBALS["user"]->uid > 0,
-			'entropy' => $this->linkedin_sso_entropy
+			'entropy' => $this->linkedin_sso_entropy,
+			'base_path' => base_path()
 		)), 'setting');
 		
 		drupal_add_js(drupal_get_path('module', 'linkedin_sso') . '/linkedin_sso.js', 'file');
