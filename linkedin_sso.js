@@ -39,8 +39,9 @@ jQuery(document).ready(function document_ready_cb() {
 		});
 				
 		// attach LinkedIn SSO login handler
-		var user_base_prefix_selector = Drupal.settings.linkedin_sso.base_path + '/user';
-		jQuery('a[href="' + user_base_prefix_selector + '"]', 'a[href^="' + user_base_prefix_selector + '/login"]').click(function user_login_link_click_handler(event) {
+		var user_base_prefix_selector = Drupal.settings.linkedin_sso.base_path + 'user';
+		console.log(user_base_prefix_selector);
+		jQuery('a[href="' + user_base_prefix_selector + '"], a[href^="' + user_base_prefix_selector + '/login"]').click(function user_login_link_click_handler(event) {
 			try { 
 				if(!IN.User.authorize()) event.preventDefault();
 			}
