@@ -17,6 +17,8 @@ jQuery(document).ready(function document_ready_cb() {
 				IN.Event.onOnce(IN, 'auth', function() {
 					window.location.href = drupal_linkedin_sso_login_uri;
 				});
+				
+				// if user is logged into Drupal, but not LI, log them out
 				if(Drupal.settings.linkedin_sso.active_session) {
 					window.location.href = drupal_linkedin_sso_logout_uri;
 				}
@@ -61,7 +63,7 @@ jQuery(document).ready(function document_ready_cb() {
 		    api_key: Drupal.settings.linkedin_sso.api_key,
 			credentials_cookie: "true",
 			authorize: "true",
-			cache_buster: Drupal.settings.linkedin_sso.entropy
+			entropy: Drupal.settings.linkedin_sso.entropy
 		});
 	});
 });
