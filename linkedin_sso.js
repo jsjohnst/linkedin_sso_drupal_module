@@ -37,24 +37,19 @@ jQuery(document).ready(function document_ready_cb() {
 				
 			}
 		});
-		
-		function user_login_link_click_handler(event) {
+				
+		// attach LinkedIn SSO login handler
+		jQuery('a[href="/user"]', 'a[href=^"/user/login"]').click(function user_login_link_click_handler(event) {
 			try { 
-				if(IN.User.authorize()) {
-					event.preventDefault();
-				}
+				if(!IN.User.authorize()) event.preventDefault();
 			}
 			catch(e) { 
 				return; 
 			}
-		}
-		
-		// attach LinkedIn SSO login handler
-		jQuery('a[href="/user"]').click(user_login_link_click_handler);
-		jQuery('a[href="/user/login"]').click(user_login_link_click_handler);
+		});
 
 		// registration links point to linkedin.com
-		jQuery('a[href="/user/register"]').attr({
+		jQuery('a[href=^"/user/register"]').attr({
 			href: "http://www.linkedin.com",
 			target: "_blank"
 		});
